@@ -2,7 +2,7 @@ import requests
 from bs4 import BeautifulSoup
 
 # Fetch the HTML content (replace 'your_url' with the actual URL)
-url = 'https://ppqs.gov.in/faq?page=6'
+url = 'https://ppqs.gov.in/faq/locust-control-research'
 response = requests.get(url, verify=False)  # Disable SSL verification
 html_content = response.content
 

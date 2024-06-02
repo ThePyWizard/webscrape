@@ -2,7 +2,7 @@ import requests
 from bs4 import BeautifulSoup
 
 # Fetch the HTML content (replace 'your_url' with the actual URL)
-url = 'https://agri.py.gov.in/faq.html'
+url = 'https://caa.gov.in/faq.html'
 response = requests.get(url)
 html_content = response.content
 
@@ -17,10 +17,10 @@ answers = soup.find_all('div', class_='panel')
 with open('questions_answers.txt', 'w', encoding='utf-8') as file:
     for question, answer in zip(questions, answers):
         # Extract the question text
-        question_text = question.get_text(strip=True).replace('Question:', '').strip()
+        question_text = question.get_text(strip=True)
         
         # Extract the answer text
-        answer_text = answer.get_text(strip=True).replace('Answers :', '').strip()
+        answer_text = answer.get_text(strip=True)
         
         # Write the question and answer to the file
         file.write(f"Question: {question_text}\n")

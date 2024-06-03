@@ -1,31 +1,42 @@
 import requests
 from bs4 import BeautifulSoup
 
-# Fetch the HTML content (replace 'your_url' with the actual URL)
-url = 'https://ppqs.gov.in/faq/locust-control-research'
-response = requests.get(url, verify=False)  # Disable SSL verification
-html_content = response.content
+# Replace with the actual URL of the webpage you want to scrape
+url = 'https://www.investindia.gov.in/faqs/sectoral'
 
-# Parse the HTML content using BeautifulSoup
-soup = BeautifulSoup(html_content, 'html.parser')
+# Send a GET request to fetch the raw HTML content
+response = requests.get(url)
 
-# Find all the question and answer pairs
-questions_answers = soup.find_all('div', class_='views-row')
+# Parse the content with BeautifulSoup
+soup = BeautifulSoup(response.content, 'html.parser')
 
-# Open a text file to write the output with UTF-8 encoding
-with open('questions_answers.txt', 'a', encoding='utf-8') as file:
-    for qa in questions_answers:
-        # Extract the question text
-        question_div = qa.find('div', class_='views-field-title')
-        question = question_div.get_text(strip=True) if question_div else 'Question not found'
+# Find the container that holds the Q&A items
+view_content = soup.find('div', class_='view-content')
+
+# Check if the container exists
+if view_content:
+    # Find all the Q&A items
+    items = view_content.find_all('li', class_='accordion-row')
+    
+    if items:
+        print(f"Found {len(items)} items")
         
-        # Extract the answer text
-        answer_div = qa.find('div', class_='views-field-body')
-        answer = answer_div.get_text(strip=True) if answer_div else 'Answer not found'
+        # Loop through each item to extract the question and answer
+        qa_list = []
+        for item in items:
+            question = item.find('div', class_='accordion-section-title').get_text(strip=True)
+            answer = item.find('div', class_='accordion-section-content').get_text(strip=True)
+            qa_list.append({'question': question, 'answer': answer})
         
-        # Write the question and answer to the file
-        file.write(f"Question: {question}\n")
-        file.write(f"Answer: {answer}\n")
-        file.write("\n")
-
-print("Questions and answers have been successfully saved to 'questions_answers.txt'")
+        # Save the Q&A pairs to a file
+        with open('qa_data.txt', 'w', encoding='utf-8') as f:
+            for qa in qa_list:
+                f.write(f"Q: {qa['question']}\n")
+                f.write(f"A: {qa['answer']}\n")
+                f.write("\n")
+        
+        print("Q&A pairs saved to qa_data.txt")
+    else:
+        print("No Q&A items found")
+else:
+    print("Q&A container not found")
